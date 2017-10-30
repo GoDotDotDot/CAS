@@ -15,8 +15,8 @@ const UserSchema = new Schema({
   nickName: {
     type: String
   },
-  roles: {
-    type: Array
+  role: {
+    type: String
   },
   creatBy: {
     type: Schema.Types.ObjectId
