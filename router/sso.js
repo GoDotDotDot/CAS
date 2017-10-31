@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken')
 const config = require('../db_config/config')
 const bcrypt = require('bcrypt')
 const SessionAuth = require('../cas/SessionAuth')
+const redirect = require('../sso/redirect')
 // const Login = require('../sso/Login')
 var mysql = require('mysql')
 var pool = mysql.createPool({
@@ -64,9 +65,10 @@ router.post('/login', function (req, res) {
           })
           req.session.userInfo = {role: user.roleName, name: user.nickName, account: user.account}
           req.session.token = token
-          // const html = ReactDOMServer.renderToString(Login)
-          // res.send(html)
-          res.status(200).json({success: true, message: '密码正确', data: {token, name: user.nickName, account: user.account, roleName: user.roleName}})
+          const {redirectUrl} = req.query
+          // res.redirect('/sso/index.html')
+          res.send(redirect(redirectUrl))
+          // res.status(200).json({success: true, message: '密码正确', data: {token, name: user.nickName, account: user.account, roleName: user.roleName}})
         } else {
           res.status(200).json({success: false, message: '密码错误'})
         }

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="description" content="*** Video.js template">
+    <meta charset=utf-8 />
+    <title>5.19 with RTMP</title>
+
+    <link href="https://unpkg.com/video.js@6.2.5/dist/video-js.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/video.js@6.2.5/dist/video.min.js"></script>
+    <script src="https://unpkg.com/videojs-flash@2.0.0/dist/videojs-flash.min.js"></script>
+
+
+
+</head>
+
+<body>
+    <video id='my-video' class="video-js vjs-default-skin" controls width="640" height="320" data-setup='{"techOrder": ["flash"]}'>
+        <source src="rtmp://39.108.1.230:1935/live/youjiangyuliang" type="rtmp/flv">
+    </video>
+
+</body>
+
+</html>
+<script>
+    // var player = videojs('my-video');
+    videojs('my-video', { techOrder: ['flash'] });
+
+</script>

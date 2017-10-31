@@ -11,6 +11,7 @@ const cas = require('./router/cas')
 
 mongoose.connect(config.db, { useMongoClient: true, promiseLibrary: global.Promise })
 mongoose.Promise = global.Promise
+app.set('trust proxy', 'loopback')
 app.use(cookieParser())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json()) // 调用bodyParser模块以便程序正确解析body传入值
