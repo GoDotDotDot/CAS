@@ -1,10 +1,12 @@
 const express = require('express')
 const router = express.Router()
+// const ReactDOMServer = require('react-dom/server')
 // const User = require('../models/user')
 const jwt = require('jsonwebtoken')
 const config = require('../db_config/config')
 const bcrypt = require('bcrypt')
 const SessionAuth = require('../cas/SessionAuth')
+// const Login = require('../sso/Login')
 var mysql = require('mysql')
 var pool = mysql.createPool({
   connectionLimit: 10,
@@ -62,6 +64,8 @@ router.post('/login', function (req, res) {
           })
           req.session.userInfo = {role: user.roleName, name: user.nickName, account: user.account}
           req.session.token = token
+          // const html = ReactDOMServer.renderToString(Login)
+          // res.send(html)
           res.status(200).json({success: true, message: '密码正确', data: {token, name: user.nickName, account: user.account, roleName: user.roleName}})
         } else {
           res.status(200).json({success: false, message: '密码错误'})
