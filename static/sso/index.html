@@ -111,7 +111,7 @@ canvas {
  * @Author: 储奎 / GoDotDotDot 
  * @Date: 2017-09-26 18:00:45 
  * @Last Modified by: 储奎 / GoDotDotDot
- * @Last Modified time: 2017-10-31 15:04:32
+ * @Last Modified time: 2017-11-01 17:59:14
  */
 .root,
 #__next, .custom_class {
@@ -160,8 +160,9 @@ function getQueryString(name) {
     }
     return null;
 }
-  var redirectUrl = getQueryString('redirectUrl')
-  redirectUrl= "http://cas.zzz.com/sso/login?redirectUrl=" + redirectUrl
+  var redirectPath = getQueryString('redirectPath')
+  var domain = getQueryString('domain')
+  var redirectUrl= "http://cas.zzz.com/sso/login?domain="+domain+"&redirectPath=" + redirectPath
   document.getElementById('form').action = redirectUrl
 </script>
   <script>

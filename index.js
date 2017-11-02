@@ -18,14 +18,15 @@ app.use(bodyParser.json()) // 调用bodyParser模块以便程序正确解析body
 app.use(session({
   name: config.cookieName,
   resave: false,
-  store: new MongoStore({ mongooseConnection: mongoose.connection, ttl: 30 }),
+  store: new MongoStore({ mongooseConnection: mongoose.connection, ttl: 20 * 60 }),
   secret: config.secret,
   cookie: {
-    domain: 'zzz.com'
+    domain: 'zzz.com',
+    httpOnly: false
   }
-//   genid: function (req) {
-//     return req.sessionID // use UUIDs for session IDs
-//   }
+  // genid: function (req) {
+  //   return '123' // use UUIDs for session IDs
+  // }
 }))
 
 app.use(express.static('static'))

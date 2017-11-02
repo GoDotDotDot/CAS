@@ -1,13 +1,13 @@
 const express = require('express')
 const router = express.Router()
-// const ReactDOMServer = require('react-dom/server')
-// const User = require('../models/user')
+require('isomorphic-fetch')
 const jwt = require('jsonwebtoken')
 const config = require('../db_config/config')
 const bcrypt = require('bcrypt')
 const SessionAuth = require('../cas/SessionAuth')
 const redirect = require('../sso/redirect')
-// const Login = require('../sso/Login')
+const Sessions = require('../models/sessions')
+
 var mysql = require('mysql')
 var pool = mysql.createPool({
   connectionLimit: 10,
@@ -65,9 +65,9 @@ router.post('/login', function (req, res) {
           })
           req.session.userInfo = {role: user.roleName, name: user.nickName, account: user.account}
           req.session.token = token
-          const {redirectUrl} = req.query
+          const {redirectPath, domain} = req.query
           // res.redirect('/sso/index.html')
-          res.send(redirect(redirectUrl))
+          res.send(redirect(domain, redirectPath))
           // res.status(200).json({success: true, message: '密码正确', data: {token, name: user.nickName, account: user.account, roleName: user.roleName}})
         } else {
           res.status(200).json({success: false, message: '密码错误'})
@@ -93,6 +93,51 @@ router.get('/logout', (req, res) => {
 router.get('/auth', SessionAuth, (req, res, next) => {
   const statusCode = 200
   res.status(statusCode).json({statusCode, message: '已登录', status: true})
+})
+router.get('/authToken', async(req, res, next) => {
+  const {redirectPath, login, domain, sId} = req.query
+  if (sId) {
+    const sId1 = String.prototype.split.call(sId, '.')[0]
+    const sessionId = String.prototype.substr.call(sId1, 2)
+    Sessions.findOne({_id: sessionId}).then(session => {
+      if (!session) {
+        const statusCode = 401
+        res.status(statusCode).json({statusCode, message: '未登录', status: false})
+      } else {
+        const {expires} = session
+        if (expires > new Date()) {
+          const statusCode = 200
+          res.status(statusCode).json({statusCode, message: 'token有效', status: true})
+        } else {
+          const statusCode = 401
+          res.status(statusCode).json({statusCode, message: '登录过期，请重新登录', status: false})
+        }
+      }
+    }).catch(err => console.log(err))
+  } else {
+    if (req.session.userInfo) {
+      console.log('cas已登录')
+      // res.redirect(`${domain}sso/index.html?sId='+sessionId+'&r=${redirectUrl}`)
+      res.send(redirect(domain, redirectPath))
+    } else {
+      console.log('cas未登录')
+      res.redirect(domain + login)
+    }
+  }
+  // const data = await fetch('http://cas.zzz.com/sso/auth', {
+  //     // credentials: 'include',
+  //   headers: {
+  //     Cookie: `sessionId=${sId};`
+  //   }
+  // }).then(_res => {
+  //   return _res.json()
+  // }).catch(err => console.log(err))
+  //   // token 失效
+  // if (!data.status) {
+  //   res.redirect(domain + login)
+  // } else {
+  //   res.redirect(domain + login)
+  // }
 })
 // 注册
 router.post('/register', (req, res) => {
