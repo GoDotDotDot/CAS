@@ -25,7 +25,7 @@ router.use(function timeLog (req, res, next) {
 router.get('/login', function (req, res) {
   const account = req.query.account
   const password = req.query.password
-  const querySql = `select * from jc_user where account='${account}'`
+  const querySql = `select * from jc_user where account=${pool.escape(account)}`
   pool.query(querySql, (err, rst, fields) => {
     if (err) throw err
     if (rst.length === 1) {
@@ -36,9 +36,11 @@ router.get('/login', function (req, res) {
           const token = jwt.sign({ name: user.nickName, account: user.account, sId: req.sessionID }, config.secret, {
             expiresIn: '7d'
           })
-          req.session.userInfo = {role: user.roleName, name: user.nickName, account: user.account}
+          const resData = {role: user.roleName, name: user.nickName, account: user.account, stationId: rst[0].stationId}
+          req.session.userInfo = resData
+          // req.session.userInfo = {role: user.roleName, name: user.nickName, account: user.account}
           req.session.token = token
-          res.status(200).json({success: true, message: '密码正确', data: {token, name: user.nickName, account: user.account, roleName: user.roleName}})
+          res.status(200).json({success: true, message: '密码正确', data: {token, ...resData}})
         } else {
           res.status(200).json({success: false, message: '密码错误'})
         }
@@ -51,9 +53,12 @@ router.get('/login', function (req, res) {
 router.post('/login', function (req, res) {
   const account = req.body.account
   const password = req.body.password
-  const querySql = `select * from jc_user where account='${account}'`
+  const querySql = `select * from jc_user where account=${pool.escape(account)}`
   pool.query(querySql, (err, rst, fields) => {
-    if (err) throw err
+    if (err) {
+      res.status(500).json({success: false, message: err.message})
+      return false
+    }
     if (rst.length === 1) {
       const serverPsw = rst[0].password
       bcrypt.compare(password, serverPsw).then((_res) => {
@@ -62,16 +67,15 @@ router.post('/login', function (req, res) {
           const token = jwt.sign({ name: user.nickName, account: user.account, sId: req.sessionID }, config.secret, {
             expiresIn: '7d'
           })
-          req.session.userInfo = {role: user.roleName, name: user.nickName, account: user.account}
+          const resData = {role: user.roleName, name: user.nickName, account: user.account, stationId: rst[0].stationId}
+          req.session.userInfo = resData
           req.session.token = token
-          // const html = ReactDOMServer.renderToString(Login)
-          // res.send(html)
-          res.status(200).json({success: true, message: '密码正确', data: {token, name: user.nickName, account: user.account, roleName: user.roleName}})
+          res.status(200).json({success: true, message: '密码正确', data: {token, ...resData}})
         } else {
           res.status(200).json({success: false, message: '密码错误'})
         }
       }).catch((err) => {
-        throw err
+        console.log(err)
       })
     }
   })
