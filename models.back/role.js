@@ -3,17 +3,14 @@ const Schema = mongoose.Schema
 
 const RoleSchema = new Schema({
   name: {
-    type: String, // 角色名称，例如ecoAdmin
+    type: String,
     require: true
   },
   permission: {
-    type: Array // 权限数组
+    type: Array
   },
-  description: {
-    type: String // 角色描述
-  },
-  system: {
-    type: Schema.Types.ObjectId // 归属系统
+  routerSource: {
+    type: Array
   }
 }, {collection: 'Role'})
 

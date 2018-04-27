@@ -77,6 +77,8 @@ router.post('/login', function (req, res) {
       }).catch((err) => {
         console.log(err)
       })
+    } else {
+      res.status(200).json({success: false, message: '用户名或密码错误！'})
     }
   })
 })
@@ -87,7 +89,7 @@ router.get('/logout', (req, res) => {
     if (err) {
       res.end(err)
     } else {
-      res.end('log out')
+      res.status(200).json({success: true, message: '注销成功！'})
     }
   })
 })
@@ -125,5 +127,11 @@ router.post('/register', (req, res) => {
     }
   })
   // connection.end()
+})
+
+// 获取登录用户信息
+router.get('/userInfo', SessionAuth, (req, res) => {
+  const {userInfo, token} = req.session
+  res.status(200).json({userInfo, token, status: true})
 })
 module.exports = router

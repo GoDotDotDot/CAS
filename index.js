@@ -6,8 +6,7 @@ const cookieParser = require('cookie-parser')
 const session = require('express-session')
 const MongoStore = require('connect-mongo')(session)
 const config = require('./db_config/config')
-const sso = require('./router/sso')
-const cas = require('./router/cas')
+const router = require('./router')
 
 mongoose.connect(config.db, { useMongoClient: true, promiseLibrary: global.Promise }, (err, connection) => {
   if (err) throw Error(err)
@@ -31,14 +30,16 @@ app.use(session({
 
 app.use(express.static('static'))
 app.use(function (req, res, next) {
-  res.header('Access-Control-Allow-Origin', '*')
+  const {origin} = req.headers
+  res.header('Access-Control-Allow-Origin', origin)
   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
   res.header('Access-Control-Allow-Headers', 'Content-Type')
   res.header('Access-Control-Allow-Credentials', 'true')
   next()
 })
-app.use('/sso', sso)
-app.use('/cas', cas)
+app.use(router)
+// app.use('/cas', cas)
+
 app.use('/', (req, res) => {
   res.send('welcome using cas!forbidden！')
 })
