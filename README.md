@@ -1,6 +1,8 @@
 # CAS
 Micro Central Authentication Service based nodejs and mongodb.
 
+** 待更新 **
+
 基于`nodejs`、`mongodb`的微型CAS系统
 ## 说明
 - 由于公司会员系统数据库在阿里云的`MySql`上，业务系统使用过多，不方便迁移到`mongodb`，所以在单点登录这快需要使用`mysql npm`包驱动，获取会员信息。
