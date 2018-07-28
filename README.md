@@ -1,7 +1,7 @@
 # CAS
 Micro Central Authentication Service based nodejs and mongodb.
 
-** 待更新 **
+**待更新**
 
 基于`nodejs`、`mongodb`的微型CAS系统
 ## 说明
